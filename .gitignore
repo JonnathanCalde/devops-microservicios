@@ -1,0 +1,59 @@
+node_modules/
+.env
+.vscode/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+.pnp
+.pnp.js
+
+# Coverage
+coverage/
+
+# Docker
+docker-compose.override.yml
+**/docker-compose.override.yml
+.docker
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# JetBrains
+.idea/
+
+# Build artifacts
+dist/
+build/
+
+# Editor directories and files
+.vscode/
+*.sublime-workspace
+
+# Environment examples
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Secrets (examples)
+secrets.json
+
+# npm
+npm-debug.log
+
+# Other
+*.pem
