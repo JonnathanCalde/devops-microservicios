@@ -1,0 +1,84 @@
+name: Terraform (plan + apply)
+
+on:
+  push:
+    branches: [staging, master]
+  workflow_dispatch:
+    inputs:
+      env:
+        description: "Entorno (staging|master)"
+        required: true
+        default: "staging"
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Init Terraform
+        working-directory: infra/terraform
+        run: |
+          terraform init -input=false
+
+      - name: Terraform validate
+        working-directory: infra/terraform
+        run: |
+          terraform validate || true
+
+      - name: Terraform plan (output file)
+        working-directory: infra/terraform
+        run: |
+          terraform plan -input=false -out=plan.tfplan
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: infra/terraform/plan.tfplan
+
+  apply:
+    name: Terraform apply
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: infra/terraform
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform apply
+        working-directory: infra/terraform
+        run: |
+          terraform init -input=false
+          terraform apply -input=false -auto-approve plan.tfplan
