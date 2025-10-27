@@ -41,13 +41,13 @@ Dependencias de desarrollo y herramientas (según package.json):
 
 Cómo ejecutar localmente (resumen):
 
-1. Copia `.env.example` a `.env` y rellena las variables `API_KEY` y `SECRET_KEY`.
-2. Instala dependencias:
-   npm install
-3. Levantar con docker-compose (opcional):
-   docker compose up --build
-4. Ejecutar pruebas unitarias:
-   npm test
+- Este repo está preparado para desplegar en Azure AKS; las instrucciones locales (docker-compose/nginx) han sido removidas para evitar confusión.
+
+Despliegue en Azure (resumen):
+
+1. Configure los secrets en GitHub: AZURE_CREDENTIALS, ACR_LOGIN_SERVER, API_KEY, SECRET_KEY.
+2. Push a `staging` o `master` para que el pipeline construya y suba la imagen a ACR.
+3. El pipeline de infra (terraform) crea ACR y AKS; el job de deploy puede usar `kubectl`/`helm` para actualizar la imagen en AKS.
 
 Seguridad y secretos:
 
